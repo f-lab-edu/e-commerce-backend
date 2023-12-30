@@ -29,8 +29,4 @@ public class OrderLine {
     public void updateOrder(Order order) {
         this.order = order;
     }
-
-    public boolean isValid() {
-        return
-    }
 }
