@@ -1,8 +1,11 @@
 package com.kichen.creation.commerce.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,6 +17,4 @@ public class Product {
     private Double price;
 
     private int stock;
-
-    protected Product() {}
 }

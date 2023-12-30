@@ -1,9 +1,12 @@
 package com.kichen.creation.commerce.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderLine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,11 +24,9 @@ public class OrderLine {
 
     private int count;
 
-    private Double totalPrice;
+    private float totalPrice;
 
-    protected OrderLine() {}
-
-    public void updaterOrder(Order order) {
+    public void updateOrder(Order order) {
         this.order = order;
     }
 }

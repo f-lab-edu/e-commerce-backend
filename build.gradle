@@ -24,7 +24,7 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	implementation 'mysql:mysql-connector-java:8.0.32'
+	implementation libs.mysql.connector.java
 }
 
 tasks.named('test') {

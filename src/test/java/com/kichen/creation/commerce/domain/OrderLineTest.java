@@ -13,7 +13,7 @@ class OrderLineTest {
         OrderLine orderLine = new OrderLine();
         Order order = new Order();
 
-        orderLine.updaterOrder(order);
+        orderLine.updateOrder(order);
         Assertions.assertThat(orderLine.getOrder()).isEqualTo(order);
     }
 }

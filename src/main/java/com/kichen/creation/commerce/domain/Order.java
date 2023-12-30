@@ -1,7 +1,9 @@
 package com.kichen.creation.commerce.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "orders")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,14 +22,12 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderLine> orderLineList = new ArrayList<>();
 
-    private boolean isSuccessful;
+    private boolean successful;
 
-    private LocalDateTime timeStamp;
-
-    protected Order() {};
+    private LocalDateTime orderDate;
 
     public void addOrderLine(OrderLine orderLine) {
         orderLineList.add(orderLine);
-        orderLine.updaterOrder(this);
+        orderLine.updateOrder(this);
     }
 }
