@@ -26,7 +26,7 @@ public class OrderLine {
 
     private float totalPrice;
 
-    public void updateOrder(Order order) {
+    public void createOrder(Order order) {
         this.order = order;
     }
 }
