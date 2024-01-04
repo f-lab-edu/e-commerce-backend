@@ -1,9 +1,11 @@
 package com.kichen.creation.commerce.service;
 
 import com.kichen.creation.commerce.domain.Product;
+import com.kichen.creation.commerce.dto.ProductDto;
 import com.kichen.creation.commerce.exception.ProductNotFoundException;
 import com.kichen.creation.commerce.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,37 +19,38 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     @Transactional
-    public void createProduct(Product product) {
+    public void createProduct(@NonNull ProductDto productDto) {
+        Product product = new Product(
+                productDto.name(),
+                productDto.price(),
+                productDto.stock()
+        );
+
         productRepository.save(product);
     }
 
-    public void editProduct(Product product) {
-        try {
-            if (productRepository.existsById(product.getId())) {
-                productRepository.save(product);
-            } else {
-                throw new ProductNotFoundException("Product is not found!");
-            }
-        } catch (IllegalArgumentException e) {
-
-            RuntimeException exception = new ProductNotFoundException("Given product Id is null!");
-            exception.initCause(e);
-            throw exception;
-        }
+    @Transactional
+    public void editProduct(@NonNull ProductDto productDto) {
+        Product product = findProductFromRepository(productDto.id());
+        product.updateFromDto(productDto);
+        productRepository.save(product);
     }
 
-    public Product findProduct(Long id) {
+    public ProductDto findProduct(@NonNull Long id) {
+        return findProductFromRepository(id).toProductDto();
+    }
+
+    public List<ProductDto> findAllProducts() {
+        return productRepository.findAll().stream()
+                .map(Product::toProductDto).toList();
+    }
+
+    private Product findProductFromRepository(@NonNull Long id) {
         try {
             return productRepository.getReferenceById(id);
+
         } catch (EntityNotFoundException e) {
-
-            RuntimeException exception = new ProductNotFoundException("Product is not found!");
-            exception.initCause(e);
-            throw exception;
+            throw new ProductNotFoundException("Product is not found!", e);
         }
-    }
-
-    public List<Product> findAllProducts() {
-        return productRepository.findAll();
     }
 }

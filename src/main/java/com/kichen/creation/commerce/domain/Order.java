@@ -25,6 +25,11 @@ public class Order {
 
     private LocalDateTime orderDate;
 
+    public Order(boolean successful, LocalDateTime orderDate) {
+        this.successful = successful;
+        this.orderDate = orderDate;
+    }
+
     public void addOrderLine(OrderLine orderLine) {
         orderLineList.add(orderLine);
         orderLine.createOrder(this);
