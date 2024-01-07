@@ -35,6 +35,7 @@
 ![db](https://github.com/f-lab-edu/e-commerce-backend/assets/60660722/79ea82be-9539-4a5a-9c63-ceacc731fec7)
 
 ### Class Diagram 
+![class_diagram](https://github.com/f-lab-edu/e-commerce-backend/assets/60660722/8425569a-4e56-4ca0-876a-4837a46f2dad)
 
 ## Technologies Used
 
