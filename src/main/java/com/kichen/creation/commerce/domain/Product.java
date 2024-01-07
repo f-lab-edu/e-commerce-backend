@@ -1,11 +1,13 @@
 package com.kichen.creation.commerce.domain;
 
-import com.kichen.creation.commerce.dto.ProductDto;
-import com.kichen.creation.commerce.exception.NotEnoughStockException;
+import com.kichen.creation.commerce.dto.product.ProductDto;
+import com.kichen.creation.commerce.exception.product.NotEnoughStockException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -50,15 +52,15 @@ public class Product {
         return new ProductDto(
                 id,
                 name,
-                price,
+                BigDecimal.valueOf(price),
                 stock
         );
     }
 
     public Product updateFromDto(ProductDto productDto) {
-        name = productDto.name();
-        price = productDto.price();
-        stock = productDto.stock();
+        name = productDto.getName();
+        price = productDto.getPrice().floatValue();
+        stock = productDto.getStock();
         return this;
     }
 

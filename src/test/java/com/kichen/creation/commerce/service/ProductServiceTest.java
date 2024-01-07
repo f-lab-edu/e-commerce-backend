@@ -1,11 +1,14 @@
 package com.kichen.creation.commerce.service;
 
 import com.kichen.creation.commerce.domain.Product;
-import com.kichen.creation.commerce.dto.ProductDto;
-import com.kichen.creation.commerce.exception.ProductNotFoundException;
+import com.kichen.creation.commerce.dto.product.CreateProductDto;
+import com.kichen.creation.commerce.dto.product.ProductDto;
+import com.kichen.creation.commerce.exception.product.ProductNotFoundException;
 import com.kichen.creation.commerce.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -18,14 +21,22 @@ class ProductServiceTest {
     ProductDto testProductDto = new ProductDto(
             testId,
             "test",
-            1f,
+            BigDecimal.valueOf(1f),
             0
     );
+
+    CreateProductDto testCreateProductDto = new CreateProductDto(
+            "test",
+            BigDecimal.valueOf(1f),
+            0
+    );
+
     Product testProduct = mock();
 
     @Test
     void createProduct() {
-        productService.createProduct(testProductDto);
+        when(productRepository.save(any(Product.class))).thenReturn(testProduct);
+        productService.createProduct(testCreateProductDto);
         verify(productRepository).save(any(Product.class));
     }
 
