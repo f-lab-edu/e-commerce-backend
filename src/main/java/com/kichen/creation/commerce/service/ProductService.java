@@ -1,8 +1,9 @@
 package com.kichen.creation.commerce.service;
 
 import com.kichen.creation.commerce.domain.Product;
-import com.kichen.creation.commerce.dto.ProductDto;
-import com.kichen.creation.commerce.exception.ProductNotFoundException;
+import com.kichen.creation.commerce.dto.product.CreateProductDto;
+import com.kichen.creation.commerce.dto.product.ProductDto;
+import com.kichen.creation.commerce.exception.product.ProductNotFoundException;
 import com.kichen.creation.commerce.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
@@ -19,19 +20,19 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     @Transactional
-    public void createProduct(@NonNull ProductDto productDto) {
+    public ProductDto createProduct(@NonNull CreateProductDto createProductDto) {
         Product product = new Product(
-                productDto.name(),
-                productDto.price(),
-                productDto.stock()
+                createProductDto.getName(),
+                createProductDto.getPrice().floatValue(),
+                createProductDto.getStock()
         );
 
-        productRepository.save(product);
+        return productRepository.save(product).toProductDto();
     }
 
     @Transactional
     public void editProduct(@NonNull ProductDto productDto) {
-        Product product = findProductFromRepository(productDto.id());
+        Product product = findProductFromRepository(productDto.getId());
         product.updateFromDto(productDto);
         productRepository.save(product);
     }

@@ -1,7 +1,10 @@
 package com.kichen.creation.commerce.dto;
 
+import com.kichen.creation.commerce.dto.product.ProductDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -11,7 +14,7 @@ class ProductDtoTest {
     void createDtoSuccess() {
         Long id = 0L;
         String name = "test";
-        float price = 1f;
+        BigDecimal price = BigDecimal.valueOf(1.5);
         int stock = 0;
 
         ProductDto productDto = new ProductDto(
@@ -21,17 +24,17 @@ class ProductDtoTest {
                 stock
         );
 
-        Assertions.assertThat(productDto.id()).isEqualTo(id);
-        Assertions.assertThat(productDto.name()).isEqualTo(name);
-        Assertions.assertThat(productDto.price()).isEqualTo(price);
-        Assertions.assertThat(productDto.stock()).isEqualTo(stock);
+        Assertions.assertThat(productDto.getId()).isEqualTo(id);
+        Assertions.assertThat(productDto.getName()).isEqualTo(name);
+        Assertions.assertThat(productDto.getPrice()).isEqualTo(price);
+        Assertions.assertThat(productDto.getStock()).isEqualTo(stock);
     }
 
     @Test
     void createDtoNullId() {
         Long id = null;
         String name = "test";
-        float price = 1f;
+        BigDecimal price = BigDecimal.valueOf(1.5);
         int stock = 0;
 
         assertThrows(
@@ -44,7 +47,7 @@ class ProductDtoTest {
     void createDtoNullName() {
         Long id = 0L;
         String name = null;
-        float price = 1f;
+        BigDecimal price = BigDecimal.valueOf(1.5);
         int stock = 0;
 
         assertThrows(
@@ -57,7 +60,7 @@ class ProductDtoTest {
     void createDtoEmptyName() {
         Long id = 0L;
         String name = "";
-        float price = 1f;
+        BigDecimal price = BigDecimal.valueOf(1.5);
         int stock = 0;
 
         assertThrows(
@@ -70,7 +73,7 @@ class ProductDtoTest {
     void createDtoNegativePrice() {
         Long id = 0L;
         String name = "test";
-        float price = -1f;
+        BigDecimal price = BigDecimal.valueOf(-1);
         int stock = 0;
 
         assertThrows(
@@ -83,7 +86,7 @@ class ProductDtoTest {
     void createDtoNegativeStock() {
         Long id = 0L;
         String name = "test";
-        float price = 1f;
+        BigDecimal price = BigDecimal.valueOf(1.5);
         int stock = -1;
 
         assertThrows(

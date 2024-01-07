@@ -1,4 +1,4 @@
-package com.kichen.creation.commerce.exception;
+package com.kichen.creation.commerce.exception.product;
 
 public class ProductNotFoundException extends RuntimeException {
     public ProductNotFoundException(String s) {
