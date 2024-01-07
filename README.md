@@ -27,14 +27,13 @@
 
 ### CI / CD
 
-- GitHub actions [workflow](.github/workflows/main.yml) is set up to:
-  - build and test the client as well as the server
-  - deploy to Docker Hub and Heroku
-  
+- Github Action [workflow](.github/workflows/main.yml)
 
+  
 ## Technologies Used
 
 - Java Spring
+- MySql
 
 ## License
 
