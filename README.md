@@ -29,7 +29,13 @@
 
 - Github Action [workflow](.github/workflows/main.yml)
 
-  
+## Architecture
+
+### ERD
+![db](https://github.com/f-lab-edu/e-commerce-backend/assets/60660722/79ea82be-9539-4a5a-9c63-ceacc731fec7)
+
+### Class Diagram 
+
 ## Technologies Used
 
 - Java Spring
