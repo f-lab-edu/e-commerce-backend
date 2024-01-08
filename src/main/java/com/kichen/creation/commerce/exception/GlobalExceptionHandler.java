@@ -1,15 +1,16 @@
 package com.kichen.creation.commerce.exception;
 
+import com.kichen.creation.commerce.exception.product.ProductNotFoundException;
 import com.kichen.creation.commerce.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
@@ -29,6 +30,17 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(
                         HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage(),
+                        LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProductNotFoundException(ProductNotFoundException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(
+                        HttpStatus.NOT_FOUND.value(),
                         ex.getMessage(),
                         LocalDateTime.now()));
     }

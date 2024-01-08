@@ -1,6 +1,7 @@
 package com.kichen.creation.commerce.domain;
 
 import com.kichen.creation.commerce.dto.product.ProductDto;
+import com.kichen.creation.commerce.dto.product.ProductResponseDto;
 import com.kichen.creation.commerce.exception.product.NotEnoughStockException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,7 @@ class ProductTest {
 
     @Test
     void toProductDto() {
-        ProductDto dto = product.toProductDto();
+        ProductResponseDto dto = product.toProductResponseDto();
         Assertions.assertThat(dto.getId()).isEqualTo(product.getId());
         Assertions.assertThat(dto.getStock()).isEqualTo(product.getStock());
         Assertions.assertThat(dto.getName()).isEqualTo(product.getName());
@@ -80,7 +81,7 @@ class ProductTest {
         when(productDto.getName()).thenReturn(newName);
         when(productDto.getPrice()).thenReturn(newPrice);
         when(productDto.getStock()).thenReturn(newStock);
-        product.updateFromDto(productDto);
+        product.update(productDto);
 
         Assertions.assertThat(product.getName()).isEqualTo(newName);
         Assertions.assertThat(product.getPrice()).isEqualTo(newPrice.floatValue());

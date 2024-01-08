@@ -1,11 +1,12 @@
 package com.kichen.creation.commerce.service;
 
 import com.kichen.creation.commerce.domain.Product;
-import com.kichen.creation.commerce.dto.product.CreateProductDto;
 import com.kichen.creation.commerce.dto.product.ProductDto;
+import com.kichen.creation.commerce.dto.product.ProductResponseDto;
 import com.kichen.creation.commerce.exception.product.ProductNotFoundException;
 import com.kichen.creation.commerce.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,30 +21,30 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     @Transactional
-    public ProductDto createProduct(@NonNull CreateProductDto createProductDto) {
+    public void createProduct(@NonNull ProductDto productDto) {
         Product product = new Product(
-                createProductDto.getName(),
-                createProductDto.getPrice().floatValue(),
-                createProductDto.getStock()
+                productDto.getName(),
+                productDto.getPrice().floatValue(),
+                productDto.getStock()
         );
 
-        return productRepository.save(product).toProductDto();
+        productRepository.save(product).toProductResponseDto();
     }
 
     @Transactional
-    public void editProduct(@NonNull ProductDto productDto) {
-        Product product = findProductFromRepository(productDto.getId());
-        product.updateFromDto(productDto);
+    public void editProduct(@NotNull Long id, @NonNull ProductDto productDto) {
+        Product product = findProductFromRepository(id);
+        product.update(productDto);
         productRepository.save(product);
     }
 
-    public ProductDto findProduct(@NonNull Long id) {
-        return findProductFromRepository(id).toProductDto();
+    public ProductResponseDto findProduct(@NonNull Long id) {
+        return findProductFromRepository(id).toProductResponseDto();
     }
 
-    public List<ProductDto> findAllProducts() {
+    public List<ProductResponseDto> findAllProducts() {
         return productRepository.findAll().stream()
-                .map(Product::toProductDto).toList();
+                .map(Product::toProductResponseDto).toList();
     }
 
     private Product findProductFromRepository(@NonNull Long id) {

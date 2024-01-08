@@ -3,15 +3,12 @@ package com.kichen.creation.commerce.dto.product;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 import java.math.BigDecimal;
 
 @Getter
 @RequiredArgsConstructor
 public class ProductDto {
-
-    @NotNull(message = "Invalid Product Id: Id is Null")
-    private final Long id;
-
     @NotBlank(message = "Invalid Product Name: Name is Blank")
     @NotEmpty(message = "Invalid Product Name: Name is Empty")
     @NotNull(message = "Invalid Product Name: Name is Null")

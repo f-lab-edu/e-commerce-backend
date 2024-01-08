@@ -1,9 +1,11 @@
 package com.kichen.creation.commerce.domain;
 
 import com.kichen.creation.commerce.dto.product.ProductDto;
+import com.kichen.creation.commerce.dto.product.ProductResponseDto;
 import com.kichen.creation.commerce.exception.product.NotEnoughStockException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +14,7 @@ import java.math.BigDecimal;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@EqualsAndHashCode
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,8 +51,8 @@ public class Product {
         stock -= quantity;
     }
 
-    public ProductDto toProductDto() {
-        return new ProductDto(
+    public ProductResponseDto toProductResponseDto() {
+        return new ProductResponseDto(
                 id,
                 name,
                 BigDecimal.valueOf(price),
@@ -57,11 +60,10 @@ public class Product {
         );
     }
 
-    public Product updateFromDto(ProductDto productDto) {
+    public void update(ProductDto productDto) {
         name = productDto.getName();
         price = productDto.getPrice().floatValue();
         stock = productDto.getStock();
-        return this;
     }
 
     private void validateQuantityPositive(int quantity) {

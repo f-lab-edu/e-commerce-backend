@@ -1,11 +1,11 @@
 package com.kichen.creation.commerce.exception.product;
 
 public class ProductNotFoundException extends RuntimeException {
-    public ProductNotFoundException(String s) {
-        super(s);
+    public ProductNotFoundException(String message) {
+        super(message);
     }
 
-    public ProductNotFoundException(String s, Throwable cause) {
-        super(s, cause);
+    public ProductNotFoundException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

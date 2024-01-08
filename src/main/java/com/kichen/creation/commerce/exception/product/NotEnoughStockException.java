@@ -1,7 +1,7 @@
 package com.kichen.creation.commerce.exception.product;
 
 public class NotEnoughStockException extends RuntimeException {
-    public NotEnoughStockException(String s) {
-        super(s);
+    public NotEnoughStockException(String message) {
+        super(message);
     }
 }
