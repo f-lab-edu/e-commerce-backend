@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -86,5 +86,17 @@ class ProductTest {
         Assertions.assertThat(product.getName()).isEqualTo(newName);
         Assertions.assertThat(product.getPrice()).isEqualTo(newPrice.floatValue());
         Assertions.assertThat(product.getStock()).isEqualTo(newStock);
+    }
+
+    @Test
+    void hasEnoughStockTrue() {
+        product.addStock(10);
+        assertTrue(product.hasEnoughStock(5));
+    }
+
+    @Test
+    void hasEnoughStockFalse() {
+        product.addStock(10);
+        assertFalse(product.hasEnoughStock(15 + testStock));
     }
 }

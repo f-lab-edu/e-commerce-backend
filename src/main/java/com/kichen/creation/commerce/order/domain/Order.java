@@ -21,6 +21,7 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderLine> orderLineList = new ArrayList<>();
 
+    @Getter
     private boolean successful;
 
     private LocalDateTime orderDate;
@@ -33,5 +34,8 @@ public class Order {
     public void addOrderLine(OrderLine orderLine) {
         orderLineList.add(orderLine);
         orderLine.createOrder(this);
+        if (!orderLine.processOrder()) {
+            successful = false;
+        }
     }
 }
