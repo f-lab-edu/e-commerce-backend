@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -57,24 +58,6 @@ class OrderServiceTest {
         orderService.createOrder(orderLineDtoList);
 
         Assertions.assertThat(testProduct.getStock()).isEqualTo(testStock);
-    }
-
-    @Test
-    void createOrderMultiThreadAccess() {
-        int count = 3;
-        int poolSize = 5;
-        List<OrderLineDto> orderLineDtoList = new ArrayList<>();
-        orderLineDtoList.add(new OrderLineDto(testId, count));
-        when(productRepository.getReferenceById(testId)).thenReturn(testProduct);
-
-        ExecutorService executorService = Executors.newFixedThreadPool(poolSize);
-        for (int i=0; i<poolSize; i++) {
-            final int idx = i;
-            executorService.submit(() -> {
-                orderService.createOrder(orderLineDtoList);
-                System.out.println("invoke" + idx + ": "  + testProduct.getStock());
-            });
-        }
     }
 
     @Test
