@@ -5,36 +5,35 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 class OrderLineTest {
 
     Product product = mock();
 
+    Order order = mock();
+
+    int testCount = 10;
+
     @Test
-    void updaterOrder() {
-        OrderLine orderLine = new OrderLine();
-        Order order = new Order();
+    void createOrderSuccess() {
+        OrderLine orderLine = new OrderLine(product, testCount);
+        when(product.hasEnoughStock(testCount)).thenReturn(true);
 
         orderLine.createOrder(order);
         Assertions.assertThat(orderLine.getOrder()).isEqualTo(order);
+        verify(product).removeStock(testCount);
     }
 
     @Test
-    void processOrderSuccess() {
-        int testCount = 10;
-        when(product.hasEnoughStock(testCount)).thenReturn(true);
+    void createOrderFail() {
         OrderLine orderLine = new OrderLine(product, testCount);
-        assertTrue(orderLine.processOrder());
-    }
-
-    @Test
-    void processOrderFail() {
-        int testCount = 10;
         when(product.hasEnoughStock(testCount)).thenReturn(false);
-        OrderLine orderLine = new OrderLine(product, testCount);
-        assertFalse(orderLine.processOrder());
+
+        orderLine.createOrder(order);
+        Assertions.assertThat(orderLine.getOrder()).isEqualTo(order);
+        verify(product, never()).removeStock(testCount);
+        verify(order).failOrder();
     }
 }

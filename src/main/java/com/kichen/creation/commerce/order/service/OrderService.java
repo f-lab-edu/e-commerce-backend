@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,15 +22,9 @@ public class OrderService {
 
     @Transactional
     public void createOrder(@NonNull List<OrderLineDto> orderLineDtoList) {
-        Order order = new Order(true, LocalDateTime.now());
-
-        for (OrderLineDto orderLineDto: orderLineDtoList) {
-            Product product = productRepository.getReferenceById(orderLineDto.getProductId());
-            int count = orderLineDto.getCount();
-            OrderLine orderLine = new OrderLine(product, count);
-            order.addOrderLine(orderLine);
-        }
-
+        Order order = Order.createOrder(
+                orderLineDtoList.stream().map(this::convertToOrderLine).toList()
+        );
         orderRepository.save(order);
     }
 
@@ -40,6 +33,13 @@ public class OrderService {
     }
 
     public List<Order> findAllOrders() {
-        return orderRepository.findAll().stream().toList();
+        return orderRepository.findAll();
+    }
+
+    private OrderLine convertToOrderLine(OrderLineDto orderLineDto) {
+        Product product = productRepository.getReferenceById(orderLineDto.getProductId());
+        int count = orderLineDto.getCount();
+
+        return new OrderLine(product, count);
     }
 }
