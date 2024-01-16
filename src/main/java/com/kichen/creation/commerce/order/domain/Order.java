@@ -23,20 +23,11 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderLine> orderLineList = new ArrayList<>();
 
-    @Getter
-    private boolean successful;
-
     @CreatedDate
     private LocalDateTime orderDate;
 
-
-    public void failOrder() {
-        successful = false;
-    }
-
     public static Order createOrder(List<OrderLine> orderLines) {
         Order order = new Order();
-        order.successful = true;
 
         for (OrderLine orderLine: orderLines) {
             order.orderLineList.add(orderLine);

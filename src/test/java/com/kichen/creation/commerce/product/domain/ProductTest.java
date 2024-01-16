@@ -87,16 +87,4 @@ class ProductTest {
         Assertions.assertThat(product.getPrice()).isEqualTo(newPrice.floatValue());
         Assertions.assertThat(product.getStock()).isEqualTo(newStock);
     }
-
-    @Test
-    void hasEnoughStockTrue() {
-        product.addStock(10);
-        assertTrue(product.hasEnoughStock(5));
-    }
-
-    @Test
-    void hasEnoughStockFalse() {
-        product.addStock(10);
-        assertFalse(product.hasEnoughStock(15 + testStock));
-    }
 }

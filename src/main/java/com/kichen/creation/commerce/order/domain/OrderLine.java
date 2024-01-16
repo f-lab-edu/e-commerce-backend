@@ -32,10 +32,6 @@ public class OrderLine {
 
     public void createOrder(Order order) {
         this.order = order;
-        if (product.hasEnoughStock(count)) {
-            product.removeStock(count);
-        } else {
-            order.failOrder();
-        }
+        product.removeStock(count);
     }
 }

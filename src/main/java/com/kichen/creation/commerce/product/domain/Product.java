@@ -64,10 +64,6 @@ public class Product {
         stock = productDto.getStock();
     }
 
-    public boolean hasEnoughStock(int count) {
-        return stock >= count;
-    }
-
     private void validateQuantityPositive(int quantity) {
         if (quantity < 1) {
             throw new IllegalArgumentException("Quantity argument has to be positive!");

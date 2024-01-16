@@ -1,8 +1,11 @@
 package com.kichen.creation.commerce.order.domain;
 
 import com.kichen.creation.commerce.product.domain.Product;
+import com.kichen.creation.commerce.product.exception.NotEnoughStockException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class OrderLineTest {
@@ -16,8 +19,6 @@ class OrderLineTest {
     @Test
     void createOrderSuccess() {
         OrderLine orderLine = new OrderLine(product, testCount);
-        when(product.hasEnoughStock(testCount)).thenReturn(true);
-
         orderLine.createOrder(order);
         Assertions.assertThat(orderLine.getOrder()).isEqualTo(order);
         verify(product).removeStock(testCount);
@@ -26,11 +27,8 @@ class OrderLineTest {
     @Test
     void createOrderFail() {
         OrderLine orderLine = new OrderLine(product, testCount);
-        when(product.hasEnoughStock(testCount)).thenReturn(false);
+        doThrow(NotEnoughStockException.class).when(product).removeStock(testCount);
 
-        orderLine.createOrder(order);
-        Assertions.assertThat(orderLine.getOrder()).isEqualTo(order);
-        verify(product, never()).removeStock(testCount);
-        verify(order).failOrder();
+        assertThrows(NotEnoughStockException.class, () -> orderLine.createOrder(order));
     }
 }
