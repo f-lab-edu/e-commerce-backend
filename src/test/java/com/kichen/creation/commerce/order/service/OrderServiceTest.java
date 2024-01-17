@@ -1,6 +1,7 @@
 package com.kichen.creation.commerce.order.service;
 
 import com.kichen.creation.commerce.order.dto.OrderLineDto;
+import com.kichen.creation.commerce.order.exception.OrderFailureException;
 import com.kichen.creation.commerce.order.repository.OrderRepository;
 import com.kichen.creation.commerce.product.domain.Product;
 import com.kichen.creation.commerce.product.exception.NotEnoughStockException;
@@ -54,7 +55,7 @@ class OrderServiceTest {
         orderLineDtoList.add(new OrderLineDto(testId, count));
         when(productRepository.getReferenceById(testId)).thenReturn(testProduct);
 
-        assertThrows(NotEnoughStockException.class, () -> orderService.createOrder(orderLineDtoList));
+        assertThrows(OrderFailureException.class, () -> orderService.createOrder(orderLineDtoList));
     }
 
     @Test
