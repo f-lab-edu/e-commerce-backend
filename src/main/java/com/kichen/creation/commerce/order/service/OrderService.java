@@ -2,10 +2,13 @@ package com.kichen.creation.commerce.order.service;
 
 import com.kichen.creation.commerce.order.domain.Order;
 import com.kichen.creation.commerce.order.domain.OrderLine;
-import com.kichen.creation.commerce.order.dto.OrderLineDto;
+import com.kichen.creation.commerce.order.dto.OrderLineRequestDto;
+import com.kichen.creation.commerce.order.dto.OrderResponseDto;
+import com.kichen.creation.commerce.order.exception.OrderNotFoundException;
 import com.kichen.creation.commerce.order.repository.OrderRepository;
-import com.kichen.creation.commerce.product.domain.Product;
+import com.kichen.creation.commerce.product.exception.ProductNotFoundException;
 import com.kichen.creation.commerce.product.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,25 +24,41 @@ public class OrderService {
     private final ProductRepository productRepository;
 
     @Transactional
-    public void createOrder(@NonNull List<OrderLineDto> orderLineDtoList) {
+    public void createOrder(@NonNull List<OrderLineRequestDto> orderLineRequestDtoList) {
         Order order = Order.createOrder(
-                orderLineDtoList.stream().map(this::convertToOrderLine).toList()
+                orderLineRequestDtoList.stream().map(this::convertToOrderLine).toList()
         );
         orderRepository.save(order);
     }
 
-    public Order findOrder(@NonNull Long id) {
-        return orderRepository.getReferenceById(id);
+    public OrderResponseDto findOrder(@NonNull Long id) {
+        try {
+            return orderRepository.getReferenceById(id).toOrderResponseDto();
+
+        } catch (EntityNotFoundException e) {
+            throw new OrderNotFoundException(String.format("Order with (id: %s) is not found!", id), e);
+        }
     }
 
-    public List<Order> findAllOrders() {
-        return orderRepository.findAll();
+    public List<OrderResponseDto> findAllOrders() {
+        return orderRepository.findAll().stream().map(Order::toOrderResponseDto).toList();
     }
 
-    private OrderLine convertToOrderLine(OrderLineDto orderLineDto) {
-        Product product = productRepository.getReferenceById(orderLineDto.getProductId());
-        int count = orderLineDto.getCount();
+    private OrderLine convertToOrderLine(OrderLineRequestDto orderLineRequestDto) {
+        Long productId = orderLineRequestDto.getProductId();
 
-        return new OrderLine(product, count);
+        try {
+            return new OrderLine(
+                    productRepository.getReferenceById(productId),
+                    orderLineRequestDto.getCount()
+            );
+
+        } catch (EntityNotFoundException e) {
+            throw new ProductNotFoundException(
+                    String.format("Order cannot be created because product with (id: %s) does not exist!", productId),
+                    e
+            );
+        }
+
     }
 }

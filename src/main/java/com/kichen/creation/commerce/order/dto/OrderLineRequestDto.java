@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class OrderLineDto {
+public class OrderLineRequestDto {
     @NotNull(message = "Invalid Product Id: productId is Null")
     private final Long productId;
 

@@ -1,5 +1,6 @@
 package com.kichen.creation.commerce.order.domain;
 
+import com.kichen.creation.commerce.order.dto.OrderLineResponseDto;
 import com.kichen.creation.commerce.order.exception.OrderFailureException;
 import com.kichen.creation.commerce.product.domain.Product;
 import com.kichen.creation.commerce.product.exception.NotEnoughStockException;
@@ -39,5 +40,13 @@ public class OrderLine {
         } catch (NotEnoughStockException e) {
             throw new OrderFailureException("Order failed!", e);
         }
+    }
+
+    public OrderLineResponseDto toOrderLineResponseDto() {
+        return new OrderLineResponseDto(
+                id,
+                product.toProductResponseDto(),
+                count
+        );
     }
 }
