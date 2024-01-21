@@ -21,9 +21,17 @@ public class OrderLineResponseDto {
             @NonNull ProductResponseDto product,
             int count
     ) {
+        validateCount(count);
+
         this.id = id;
         this.product = product;
         this.count = count;
         this.cost = Math.round(count * product.getPrice() * ONE_HUNDRED_FLOAT) / ONE_HUNDRED_FLOAT;
+    }
+
+    private void validateCount(int count) {
+        if (count < 1) {
+            throw new IllegalArgumentException("Count cannot be less than 1!");
+        }
     }
 }

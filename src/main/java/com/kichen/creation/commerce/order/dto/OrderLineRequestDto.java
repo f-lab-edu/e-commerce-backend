@@ -1,16 +1,27 @@
 package com.kichen.creation.commerce.order.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
 
 @Getter
-@RequiredArgsConstructor
 public class OrderLineRequestDto {
-    @NotNull(message = "Invalid Product Id: productId is Null")
     private final Long productId;
 
-    @Min(value = 1, message = "Invalid Stock: Less than 1")
     private final int count;
+
+    public OrderLineRequestDto(
+            @NonNull Long productId,
+            int count
+    ) {
+        validateCount(count);
+
+        this.productId = productId;
+        this.count = count;
+    }
+
+    private void validateCount(int count) {
+        if (count < 1) {
+            throw new IllegalArgumentException("Count cannot be less than 1!");
+        }
+    }
 }

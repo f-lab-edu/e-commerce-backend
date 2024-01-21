@@ -24,6 +24,8 @@ public class OrderResponseDto {
             @NonNull List<OrderLineResponseDto> orderLineList,
             @NonNull LocalDateTime orderDate
     ) {
+        validateOrderLineResponseDtoList(orderLineList);
+
         this.id = id;
         this.orderLineList = orderLineList;
         this.orderDate = orderDate;
@@ -36,5 +38,13 @@ public class OrderResponseDto {
             cost += orderLine.getCost();
         }
         return Math.round(cost * ONE_HUNDRED_FLOAT / ONE_HUNDRED_FLOAT);
+    }
+
+    private void validateOrderLineResponseDtoList(
+            List<OrderLineResponseDto> orderLineResponseDtoList
+    ) {
+        if (orderLineResponseDtoList == null || orderLineResponseDtoList.isEmpty()) {
+            throw new IllegalArgumentException("OrderLineResponseDtoList cannot be null or empty!");
+        }
     }
 }
