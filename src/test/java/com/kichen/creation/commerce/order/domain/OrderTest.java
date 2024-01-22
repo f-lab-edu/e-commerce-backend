@@ -26,7 +26,7 @@ class OrderTest {
     void createOrderSuccess() {
         List<OrderLine> orderLines = new ArrayList<>();
         orderLines.add(orderLine);
-        Order order = Order.createOrder(orderLines);
+        Order order = Order.create(orderLines);
 
         assertEquals(order.getOrderLineList(), orderLines);
     }
@@ -37,7 +37,7 @@ class OrderTest {
         orderLines.add(orderLine);
         doThrow(NotEnoughStockException.class).when(product).removeStock(testCount);
 
-        assertThrows(OrderFailureException.class, () -> Order.createOrder(orderLines));
+        assertThrows(OrderFailureException.class, () -> Order.create(orderLines));
     }
 
     @Test
@@ -56,7 +56,7 @@ class OrderTest {
             executorService.submit(() -> {
                 try {
                     latch.await();
-                    Order.createOrder(orderLines);
+                    Order.create(orderLines);
                 } catch (Exception e) {}
 
                 latch2.countDown();

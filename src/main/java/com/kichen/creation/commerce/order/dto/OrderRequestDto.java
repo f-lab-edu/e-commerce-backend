@@ -1,10 +1,11 @@
 package com.kichen.creation.commerce.order.dto;
 
 import lombok.*;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class OrderRequestDto {
     private List<OrderLineRequestDto> orderLineRequestDtoList;
@@ -20,7 +21,7 @@ public class OrderRequestDto {
     private void validateOrderLineRequestDtoList(
             List<OrderLineRequestDto> orderLineRequestDtoList
     ) {
-        if (orderLineRequestDtoList == null || orderLineRequestDtoList.isEmpty()) {
+        if (CollectionUtils.isEmpty(orderLineRequestDtoList)) {
             throw new IllegalArgumentException("OrderLineRequestDtoList cannot be null or empty!");
         }
     }

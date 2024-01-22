@@ -8,13 +8,13 @@ import com.kichen.creation.commerce.order.exception.OrderNotFoundException;
 import com.kichen.creation.commerce.order.repository.OrderRepository;
 import com.kichen.creation.commerce.product.domain.Product;
 import com.kichen.creation.commerce.product.repository.ProductRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -44,7 +44,7 @@ class OrderServiceTest {
         int count = 3;
         List<OrderLineRequestDto> orderLineRequestDtoList = new ArrayList<>();
         orderLineRequestDtoList.add(new OrderLineRequestDto(testId, count));
-        when(productRepository.getReferenceById(testId)).thenReturn(testProduct);
+        when(productRepository.findById(testId)).thenReturn(Optional.of(testProduct));
 
         orderService.createOrder(orderLineRequestDtoList);
 
@@ -56,7 +56,7 @@ class OrderServiceTest {
         int count = 11;
         List<OrderLineRequestDto> orderLineRequestDtoList = new ArrayList<>();
         orderLineRequestDtoList.add(new OrderLineRequestDto(testId, count));
-        when(productRepository.getReferenceById(testId)).thenReturn(testProduct);
+        when(productRepository.findById(testId)).thenReturn(Optional.of(testProduct));
 
         assertThrows(OrderFailureException.class, () -> orderService.createOrder(orderLineRequestDtoList));
     }
@@ -67,17 +67,17 @@ class OrderServiceTest {
         Order testOrder = mock();
         OrderResponseDto testOrderResponseDto = mock();
         when(testOrder.toOrderResponseDto()).thenReturn(testOrderResponseDto);
-        when(orderRepository.getReferenceById(testId)).thenReturn(testOrder);
+        when(orderRepository.findById(testId)).thenReturn(Optional.of(testOrder));
 
         orderService.findOrder(testId);
 
-        verify(orderRepository).getReferenceById(testId);
+        verify(orderRepository).findById(testId);
     }
 
     @Test
     void findOrderFail() {
         Long testId = 0L;
-        when(orderRepository.getReferenceById(testId)).thenThrow(EntityNotFoundException.class);
+        when(orderRepository.findById(testId)).thenReturn(Optional.empty());
 
         assertThrows(OrderNotFoundException.class, () -> orderService.findOrder(testId));
     }

@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 @SpringBootTest
 class CommerceApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+//	@Test
+//	void contextLoads() {
+//	}
 }

@@ -29,7 +29,7 @@ public class Order {
     @CreatedDate
     private LocalDateTime orderDate;
 
-    public static Order createOrder(List<OrderLine> orderLines) {
+    public static Order create(List<OrderLine> orderLines) {
         Order order = new Order();
 
         for (OrderLine orderLine: orderLines) {

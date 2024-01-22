@@ -2,6 +2,7 @@ package com.kichen.creation.commerce.order.dto;
 
 import lombok.Getter;
 import lombok.NonNull;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,7 +44,7 @@ public class OrderResponseDto {
     private void validateOrderLineResponseDtoList(
             List<OrderLineResponseDto> orderLineResponseDtoList
     ) {
-        if (orderLineResponseDtoList == null || orderLineResponseDtoList.isEmpty()) {
+        if (CollectionUtils.isEmpty(orderLineResponseDtoList)) {
             throw new IllegalArgumentException("OrderLineResponseDtoList cannot be null or empty!");
         }
     }

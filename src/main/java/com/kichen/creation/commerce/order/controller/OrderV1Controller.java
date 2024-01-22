@@ -16,17 +16,17 @@ public class OrderV1Controller {
 
     private final OrderService orderService;
 
-    @GetMapping("/orders")
+    @GetMapping("/v1/orders")
     public SuccessResponse<List<OrderResponseDto>> getAllOrders() {
         return new SuccessResponse<>(HttpStatus.OK.value(), "Success", orderService.findAllOrders());
     }
 
-    @GetMapping("/orders/{id}")
+    @GetMapping("/v1/orders/{id}")
     public SuccessResponse<OrderResponseDto> getOrder(@PathVariable Long id) {
         return new SuccessResponse<>(HttpStatus.OK.value(), "Success", orderService.findOrder(id));
     }
 
-    @PostMapping("/orders")
+    @PostMapping("/v1/orders")
     public SuccessResponse<?> createOrder(@RequestBody OrderRequestDto order) {
         orderService.createOrder(order.getOrderLineRequestDtoList());
         return new SuccessResponse<>(HttpStatus.OK.value(), "Success");
