@@ -5,8 +5,10 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,21 +31,34 @@ public class Order {
     @CreatedDate
     private LocalDateTime orderDate;
 
-    public static Order create(List<OrderLine> orderLines) {
-        Order order = new Order();
+    private float totalCost;
+
+    public Order(
+            @NonNull List<OrderLine> orderLines
+    ) {
+        validateOrderLineList(orderLines);
 
         for (OrderLine orderLine: orderLines) {
-            order.orderLineList.add(orderLine);
-            orderLine.createOrder(order);
+            orderLineList.add(orderLine);
+            totalCost += orderLine.getCost();
+            orderLine.createOrder(this);
         }
-        return order;
     }
 
     public OrderResponseDto toOrderResponseDto() {
         return new OrderResponseDto(
                 id,
                 orderLineList.stream().map(OrderLine::toOrderLineResponseDto).toList(),
-                orderDate
+                orderDate,
+                totalCost
         );
+    }
+
+    private void validateOrderLineList(
+            List<OrderLine> orderLines
+    ) {
+        if (CollectionUtils.isEmpty(orderLines)) {
+            throw new IllegalArgumentException("OrderLineResponseDtoList cannot be null or empty!");
+        }
     }
 }

@@ -24,9 +24,10 @@ public class OrderService {
 
     @Transactional
     public void createOrder(@NonNull List<OrderLineRequestDto> orderLineRequestDtoList) {
-        Order order = Order.create(
+        Order order = new Order(
                 orderLineRequestDtoList.stream().map(this::convertToOrderLine).toList()
         );
+
         orderRepository.save(order);
     }
 

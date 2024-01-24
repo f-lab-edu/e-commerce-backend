@@ -26,7 +26,7 @@ class OrderTest {
     void createOrderSuccess() {
         List<OrderLine> orderLines = new ArrayList<>();
         orderLines.add(orderLine);
-        Order order = Order.create(orderLines);
+        Order order = new Order(orderLines);
 
         assertEquals(order.getOrderLineList(), orderLines);
     }
@@ -37,7 +37,7 @@ class OrderTest {
         orderLines.add(orderLine);
         doThrow(NotEnoughStockException.class).when(product).removeStock(testCount);
 
-        assertThrows(OrderFailureException.class, () -> Order.create(orderLines));
+        assertThrows(OrderFailureException.class, () -> new Order(orderLines));
     }
 
     @Test
@@ -46,6 +46,7 @@ class OrderTest {
         List<OrderLine> orderLines = new ArrayList<>();
         Product testProduct = new TestProduct("test", 10f, 10);
         OrderLine testOrderLine = new OrderLine(testProduct, testCount);
+
         orderLines.add(testOrderLine);
 
         CountDownLatch latch = new CountDownLatch(poolSize);
@@ -56,7 +57,7 @@ class OrderTest {
             executorService.submit(() -> {
                 try {
                     latch.await();
-                    Order.create(orderLines);
+                    new Order(orderLines);
                 } catch (Exception e) {}
 
                 latch2.countDown();
