@@ -1,5 +1,6 @@
 package com.kichen.creation.commerce.order.domain;
 
+import com.kichen.creation.commerce.order.cost.PricingStrategy;
 import com.kichen.creation.commerce.order.dto.OrderResponseDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -34,15 +35,17 @@ public class Order {
     private float totalCost;
 
     public Order(
-            @NonNull List<OrderLine> orderLines
-    ) {
+            @NonNull List<OrderLine> orderLines,
+            @NonNull PricingStrategy pricingStrategy
+            ) {
         validateOrderLineList(orderLines);
 
         for (OrderLine orderLine: orderLines) {
             orderLineList.add(orderLine);
-            totalCost += orderLine.getCost();
             orderLine.createOrder(this);
         }
+
+        totalCost = pricingStrategy.calculatePrice(orderLines);
     }
 
     public OrderResponseDto toOrderResponseDto() {

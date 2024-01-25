@@ -1,5 +1,7 @@
 package com.kichen.creation.commerce.order.domain;
 
+import com.kichen.creation.commerce.order.cost.PricingStrategy;
+import com.kichen.creation.commerce.order.cost.SimplePricingStrategy;
 import com.kichen.creation.commerce.order.exception.OrderFailureException;
 import com.kichen.creation.commerce.product.domain.Product;
 import com.kichen.creation.commerce.product.domain.TestProduct;
@@ -21,12 +23,13 @@ class OrderTest {
     Product product = mock();
     int testCount = 10;
     OrderLine orderLine = new OrderLine(product, testCount);
+    PricingStrategy pricingStrategy = new SimplePricingStrategy();
 
     @Test
     void createOrderSuccess() {
         List<OrderLine> orderLines = new ArrayList<>();
         orderLines.add(orderLine);
-        Order order = new Order(orderLines);
+        Order order = new Order(orderLines, pricingStrategy);
 
         assertEquals(order.getOrderLineList(), orderLines);
     }
@@ -37,7 +40,7 @@ class OrderTest {
         orderLines.add(orderLine);
         doThrow(NotEnoughStockException.class).when(product).removeStock(testCount);
 
-        assertThrows(OrderFailureException.class, () -> new Order(orderLines));
+        assertThrows(OrderFailureException.class, () -> new Order(orderLines, pricingStrategy));
     }
 
     @Test
@@ -57,7 +60,7 @@ class OrderTest {
             executorService.submit(() -> {
                 try {
                     latch.await();
-                    new Order(orderLines);
+                    new Order(orderLines, pricingStrategy);
                 } catch (Exception e) {}
 
                 latch2.countDown();
