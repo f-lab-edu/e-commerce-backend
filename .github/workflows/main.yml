@@ -36,6 +36,8 @@ jobs:
         run: ./gradlew test
 
   Docker:
+    runs-on: ubuntu-latest
+
     steps:
       - name: Docker Log in
         run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PWD }}
