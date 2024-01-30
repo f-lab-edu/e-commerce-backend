@@ -2,6 +2,7 @@ package com.kichen.creation.commerce;
 
 import com.kichen.creation.commerce.order.domain.Order;
 import com.kichen.creation.commerce.order.dto.OrderLineRequestDto;
+import com.kichen.creation.commerce.order.exception.OrderFailureException;
 import com.kichen.creation.commerce.order.repository.OrderRepository;
 import com.kichen.creation.commerce.order.service.OrderService;
 import com.kichen.creation.commerce.product.domain.Product;
@@ -39,12 +40,12 @@ class CommerceApplicationTests {
     }
 
     @Test
-    void createOrderMultiThreadAccess() throws InterruptedException {
-        int poolSize = 10;
+    void createOrderMultiThreadOneOrderPass() throws InterruptedException {
+        int poolSize = 10000;
         Product product = new Product(
                 "test product",
                 32.0f,
-                10
+                50
         );
 
         Product savedProduct = productRepository.save(product);
@@ -52,7 +53,7 @@ class CommerceApplicationTests {
         List<OrderLineRequestDto> orderLineList = new ArrayList<>();
         OrderLineRequestDto orderLine = new OrderLineRequestDto(
                 savedProduct.getId(),
-                10
+                50
         );
         orderLineList.add(orderLine);
 
@@ -75,6 +76,50 @@ class CommerceApplicationTests {
         latch.await();
         Assertions.assertThat(orderRepository.findAll().size()).isEqualTo(1);
         Assertions.assertThat(errorLatch.getCount()).isEqualTo(0);
+    }
+
+    @Test
+    void createOrderMultiThreadMultipleOrderPass() throws InterruptedException {
+        int poolSize = 5;
+        int initialStock = 50;
+        Product product = new Product(
+                "test product",
+                32.0f,
+                initialStock
+        );
+
+        Product savedProduct = productRepository.save(product);
+        int orderStock = 5;
+
+        List<OrderLineRequestDto> orderLineList = new ArrayList<>();
+        OrderLineRequestDto orderLine = new OrderLineRequestDto(
+                savedProduct.getId(),
+                orderStock
+        );
+        orderLineList.add(orderLine);
+
+        CountDownLatch latch = new CountDownLatch(poolSize);
+        CountDownLatch errorLatch = new CountDownLatch(poolSize - 1);
+
+        Collection<CreateOrderCallable> createOrderCallableList = new ArrayList<>();
+        for (int i=0; i<poolSize; i++) {
+            createOrderCallableList.add(new CreateOrderCallable(
+                    orderService,
+                    orderLineList,
+                    latch,
+                    errorLatch
+            ));
+        }
+
+        ExecutorService executorService = Executors.newFixedThreadPool(poolSize);
+        executorService.invokeAll(createOrderCallableList);
+
+        latch.await();
+        Assertions.assertThat(orderRepository.findAll().size()).isEqualTo(poolSize);
+        Assertions.assertThat(errorLatch.getCount()).isEqualTo(poolSize - 1);
+        // read only 에서 실행할 수 없다는 에러
+//        Assertions.assertThat(productRepository.findById(savedProduct.getId()).get().getStock())
+//                .isEqualTo(initialStock - (orderStock * poolSize));
     }
 
     static class CreateOrderCallable implements Callable<Order> {
@@ -104,8 +149,7 @@ class CommerceApplicationTests {
                         orderLineRequestDtos
                 );
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (OrderFailureException e) {
                 errorLatch.countDown();
 
             } finally {
