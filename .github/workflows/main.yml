@@ -7,17 +7,28 @@ jobs:
   Build-and-Test:
     runs-on: ubuntu-latest
 
+    env:
+      MYSQL_ROOT_PASSWORD: ${{secrets.MYSQL_ROOT_PASSWORD}}
+      MYSQL_DATABASE: ${{secrets.MYSQL_DATABASE}}
+      TEST_SPRING_DATASOURCE_USERNAME: ${{secrets.TEST_SPRING_DATASOURCE_USERNAME}}
+      TEST_SPRING_DATASOURCE_PASSWORD: ${{secrets.TEST_SPRING_DATASOURCE_PASSWORD}}
+
     services:
       mysql:
         image: mysql:latest
         env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: test_db
-          MYSQL_USER: user
-          MYSQL_PASSWORD: 1234
+          MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+          MYSQL_DATABASE: ${MYSQL_DATABASE}
+          MYSQL_USER: ${TEST_SPRING_DATASOURCE_USERNAME}
+          MYSQL_PASSWORD: ${TEST_SPRING_DATASOURCE_PASSWORD}
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6369
 
     steps:
       - name: Checkout Repository
@@ -34,6 +45,11 @@ jobs:
 
       - name: Test
         run: ./gradlew test
+        env:
+          TEST_SPRING_DATASOURCE_DRIVER: ${{secrets.TEST_SPRING_DATASOURCE_DRIVER}}
+          TEST_SPRING_DATASOURCE_URL: ${{secrets.TEST_SPRING_DATASOURCE_URL}}
+          TEST_REDIS_HOST: ${{secrets.TEST_REDIS_HOST}}
+          TEST_REDIS_PORT: ${{secrets.TEST_REDIS_PORT}}
 
   Docker:
     needs: Build-and-Test
