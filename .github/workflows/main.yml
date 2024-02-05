@@ -51,11 +51,6 @@ jobs:
     needs: Build-and-Test
     runs-on: ubuntu-latest
 
-    on:
-      push:
-        branches:
-          - main
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
