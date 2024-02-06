@@ -33,34 +33,38 @@ class CommerceApplicationTests {
     @Autowired
     OrderService orderService;
 
+    private Product savedProduct;
+
+    private CountDownLatch latch;
+
+    private CountDownLatch errorLatch;
+
     @BeforeEach
     void setUp() {
         orderRepository.deleteAll();
         productRepository.deleteAll();
-    }
 
-    @Test
-    void createOrderMultiThreadOneOrderPass() throws InterruptedException {
-        int poolSize = 10000;
+        // Create a new product and save to db
         Product product = new Product(
                 "test product",
                 32.0f,
                 50
         );
+        savedProduct = productRepository.save(product);
+    }
 
-        Product savedProduct = productRepository.save(product);
-
-        CountDownLatch latch = new CountDownLatch(poolSize);
-        CountDownLatch errorLatch = new CountDownLatch(poolSize - 1);
+    private void runOrderCallables(int poolSize, int orderAmount) throws InterruptedException {
+        latch = new CountDownLatch(poolSize);
+        errorLatch = new CountDownLatch(poolSize - 1);
 
         Collection<CreateOrderCallable> createOrderCallableList = new ArrayList<>();
         for (int i=0; i<poolSize; i++) {
             List<OrderLineRequestDto> orderLineList = new ArrayList<>();
             orderLineList.add(
                     new OrderLineRequestDto(
-                    savedProduct.getId(),
-                    50
-                )
+                            savedProduct.getId(),
+                            orderAmount
+                    )
             );
 
             createOrderCallableList.add(new CreateOrderCallable(
@@ -73,6 +77,12 @@ class CommerceApplicationTests {
 
         ExecutorService executorService = Executors.newFixedThreadPool(poolSize);
         executorService.invokeAll(createOrderCallableList);
+    }
+
+    @Test
+    void createOrderMultiThreadOneOrderPass() throws InterruptedException {
+
+        runOrderCallables(10000, 50);
 
         latch.await();
         Assertions.assertThat(orderRepository.findAll().size()).isEqualTo(1);
@@ -85,48 +95,18 @@ class CommerceApplicationTests {
     @Test
     void createOrderMultiThreadMultipleOrderPass() throws InterruptedException {
         int poolSize = 10;
-        int initialStock = 50;
-        Product product = new Product(
-                "test product",
-                32.0f,
-                initialStock
-        );
+        int orderAmount = 5;
 
-        Product savedProduct = productRepository.save(product);
-        int orderStock = 5;
-
-        CountDownLatch latch = new CountDownLatch(poolSize);
-        CountDownLatch errorLatch = new CountDownLatch(poolSize - 1);
-
-        Collection<CreateOrderCallable> createOrderCallableList = new ArrayList<>();
-        for (int i=0; i<poolSize; i++) {
-            List<OrderLineRequestDto> orderLineList = new ArrayList<>();
-            orderLineList.add(
-                    new OrderLineRequestDto(
-                    savedProduct.getId(),
-                    orderStock
-                )
-            );
-
-            createOrderCallableList.add(new CreateOrderCallable(
-                    orderService,
-                    orderLineList,
-                    latch,
-                    errorLatch
-            ));
-        }
-
-        ExecutorService executorService = Executors.newFixedThreadPool(poolSize);
-        executorService.invokeAll(createOrderCallableList);
+        runOrderCallables(poolSize, orderAmount);
 
         latch.await();
         Assertions.assertThat(orderRepository.findAll().size()).isEqualTo(poolSize);
         Assertions.assertThat(errorLatch.getCount()).isEqualTo(poolSize - 1);
 
-        // jpa lock 사용 시
+        // jpa 비관적 락 사용 시
         // read only 에서 실행할 수 없다는 에러
 //        Assertions.assertThat(productRepository.findById(savedProduct.getId()).get().getStock())
-//                .isEqualTo(initialStock - (orderStock * poolSize));
+//                .isEqualTo(0);
     }
 
     static class CreateOrderCallable implements Callable<Order> {

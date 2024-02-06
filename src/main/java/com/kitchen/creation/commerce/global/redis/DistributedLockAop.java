@@ -44,9 +44,9 @@ public class DistributedLockAop {
 
         try {
             boolean available = rLock.tryLock(
-                    distributedLock.waitTime(),
-                    distributedLock.leaseTime(),
-                    distributedLock.timeUnit()
+                distributedLock.waitTime(),
+                distributedLock.leaseTime(),
+                distributedLock.timeUnit()
             );
 
             if (!available) {
@@ -62,9 +62,9 @@ public class DistributedLockAop {
         } finally {
             try {
                 rLock.unlock();
-                log.info("unlocking Lock [Lock:{}]", rLock.getName());
+                log.info("unlocked Lock [Lock:{}]", rLock.getName());
             } catch (IllegalMonitorStateException e) {
-                log.info("Redisson Lock [Lock:{}] Already Unlocked", rLock.getName());
+                log.info("Lock [Lock:{}] Already Unlocked", rLock.getName());
             }
         }
     }
