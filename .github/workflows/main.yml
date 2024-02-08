@@ -47,6 +47,17 @@ jobs:
           TEST_SPRING_DATASOURCE_USERNAME: ${{ secrets.TEST_SPRING_DATASOURCE_USERNAME }}
           TEST_SPRING_DATASOURCE_PASSWORD: ${{ secrets.TEST_SPRING_DATASOURCE_PASSWORD }}
 
+      - name: Notify on Slack
+        run: |
+          if [[ "${{ job.status }}" == 'success' ]]; then
+            message="Build and test passed for commit ${{ github.sha }} in branch ${{ github.ref }} by ${{ github.actor }}"
+          else
+            message="Build or test failed for commit ${{ github.sha }} in branch ${{ github.ref }} by ${{ github.actor }}"
+          fi
+          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"${message}\"}" $SLACK_WEBHOOK_URL
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
   Docker:
     needs: Build-and-Test
     runs-on: ubuntu-latest
