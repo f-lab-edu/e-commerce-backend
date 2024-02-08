@@ -50,9 +50,9 @@ jobs:
       - name: Notify on Slack
         run: |
           if [[ "${{ job.status }}" == 'success' ]]; then
-            message="Build and test passed for commit ${{ github.sha }} in branch ${{ github.ref }} by ${{ github.actor }}"
+            message="Build and test passed for a commit in branch ${{ github.ref }} by ${{ github.actor }}"
           else
-            message="Build or test failed for commit ${{ github.sha }} in branch ${{ github.ref }} by ${{ github.actor }}"
+            message="Build or test failed for a commit in branch ${{ github.ref }} by ${{ github.actor }}"
           fi
           curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"${message}\"}" $SLACK_WEBHOOK_URL
         env:
@@ -78,3 +78,14 @@ jobs:
 
       - name: Push Image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/e-commerce
+
+      - name: Notify on Slack
+        run: |
+          if [[ "${{ job.status }}" == 'success' ]]; then
+            message="Docker step passed for a commit in branch ${{ github.ref }} by ${{ github.actor }}"
+          else
+            message="Docker step failed for a commit in branch ${{ github.ref }} by ${{ github.actor }}"
+          fi
+          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"${message}\"}" $SLACK_WEBHOOK_URL
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
