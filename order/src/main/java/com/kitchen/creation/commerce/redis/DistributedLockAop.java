@@ -1,5 +1,6 @@
-package com.kitchen.creation.commerce.global.redis;
+package com.kitchen.creation.commerce.redis;
 
+import com.kitchen.creation.commerce.global.exception.order.OrderFailureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -24,22 +25,34 @@ public class DistributedLockAop {
     private final RedissonClient redissonClient;
     private final AopForTransaction aopForTransaction;
 
-    @Around("@annotation(com.kitchen.creation.commerce.global.redis.DistributedLock)")
-    public Object lock(final ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("@annotation(com.kitchen.creation.commerce.redis.DistributedLock)")
+    public void lock(final ProceedingJoinPoint joinPoint) throws Throwable {
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         DistributedLock distributedLock = method.getAnnotation(DistributedLock.class);
 
-        String key = REDISSON_LOCK_PREFIX +
-                CustomSpringELParser.getDynamicValue(
-                        signature.getParameterNames(),
-                        joinPoint.getArgs(),
-                        distributedLock.key()
-                );
+        String[] productIds = distributedLock.key().split(",", -1);
 
-        log.info("lock on [method:{}] [key:{}]", method, key);
+        for (String productId: productIds) {
+            String key = REDISSON_LOCK_PREFIX +
+                    CustomSpringELParser.getDynamicValue(
+                            signature.getParameterNames(),
+                            joinPoint.getArgs(),
+                            productId
+                    );
 
+            log.info("lock on [method:{}] [key:{}]", method, key);
+
+            lockHelper(key, distributedLock, joinPoint);
+        }
+    }
+
+    private void lockHelper(
+            String key,
+            DistributedLock distributedLock,
+            ProceedingJoinPoint joinPoint
+    ) throws Throwable {
         RLock rLock = redissonClient.getLock(key);
 
         try {
@@ -50,10 +63,10 @@ public class DistributedLockAop {
             );
 
             if (!available) {
-                return false;
+                return;
             }
 
-            return aopForTransaction.proceed(joinPoint);
+            aopForTransaction.proceed(joinPoint);
 
         } catch (InterruptedException e) {
             // happens if interrupted while trying to obtain the lock
@@ -64,6 +77,7 @@ public class DistributedLockAop {
                 rLock.unlock();
                 log.info("unlocked Lock [Lock:{}]", rLock.getName());
             } catch (IllegalMonitorStateException e) {
+                // lock is already unlocked if the lease time has ended
                 log.info("Lock [Lock:{}] Already Unlocked", rLock.getName());
             }
         }

@@ -1,4 +1,4 @@
-package com.kitchen.creation.commerce.global.redis;
+package com.kitchen.creation.commerce.redis;
 
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -16,6 +16,7 @@ public class CustomSpringELParser {
         for (int i = 0; i < parameterNames.length; i++) {
             context.setVariable(parameterNames[i], args[i]);
         }
+
         return parser.parseExpression(key).getValue(context, Object.class);
     }
 }

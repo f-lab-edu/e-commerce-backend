@@ -2,7 +2,6 @@ package com.kitchen.creation.commerce.order.dto;
 
 import lombok.Getter;
 import lombok.NonNull;
-
 @Getter
 public class OrderLineRequestDto {
     private final Long productId;

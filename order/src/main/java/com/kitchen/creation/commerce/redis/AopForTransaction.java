@@ -1,4 +1,4 @@
-package com.kitchen.creation.commerce.global.redis;
+package com.kitchen.creation.commerce.redis;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.stereotype.Component;
