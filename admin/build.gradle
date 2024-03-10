@@ -12,6 +12,7 @@ repositories {
 dependencies {
     implementation project(path: ':product')
     implementation project(path: ':common')
+    implementation project(path: ':auth')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'

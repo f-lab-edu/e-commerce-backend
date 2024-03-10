@@ -4,3 +4,5 @@ include 'product'
 include 'order'
 include 'api'
 include 'admin'
+include 'auth'
+

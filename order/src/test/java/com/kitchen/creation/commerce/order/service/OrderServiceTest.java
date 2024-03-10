@@ -50,7 +50,7 @@ class OrderServiceTest {
         orderLineRequestDtoList.add(new OrderLineRequestDto(testId, count));
         when(productRepository.findById(testId)).thenReturn(Optional.of(testProduct));
 
-        orderService.createOrder(orderLineRequestDtoList);
+        orderService.createOrder(List.of(testId.toString()), orderLineRequestDtoList);
 
         Assertions.assertThat(testProduct.getStock()).isEqualTo(testStock - count);
     }
@@ -62,7 +62,8 @@ class OrderServiceTest {
         orderLineRequestDtoList.add(new OrderLineRequestDto(testId, count));
         when(productRepository.findById(testId)).thenReturn(Optional.of(testProduct));
 
-        assertThrows(OrderFailureException.class, () -> orderService.createOrder(orderLineRequestDtoList));
+        assertThrows(OrderFailureException.class, () ->
+                orderService.createOrder(List.of(testId.toString()), orderLineRequestDtoList));
     }
 
     @Test

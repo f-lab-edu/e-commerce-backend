@@ -1,5 +1,6 @@
 package com.kitchen.creation.commerce.global.exception;
 
+import com.kitchen.creation.commerce.global.exception.auth.InvalidTokenException;
 import com.kitchen.creation.commerce.global.exception.order.OrderFailureException;
 import com.kitchen.creation.commerce.global.exception.order.OrderNotFoundException;
 import com.kitchen.creation.commerce.global.exception.product.ProductNotFoundException;
@@ -60,6 +61,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(OrderNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleOrderNotFoundException(OrderNotFoundException ex) {
+
+        return ResponseEntity
+                .status(ex.getHttpStatusCode())
+                .body(new ErrorResponse(
+                        ex.getHttpStatusCode(),
+                        ex.getMessage(),
+                        LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidTokenException(InvalidTokenException ex) {
 
         return ResponseEntity
                 .status(ex.getHttpStatusCode())

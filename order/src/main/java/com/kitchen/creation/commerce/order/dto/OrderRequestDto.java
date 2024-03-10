@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -27,5 +28,14 @@ public class OrderRequestDto {
         if (CollectionUtils.isEmpty(orderLineRequestDtoList)) {
             throw new IllegalArgumentException("OrderLineRequestDtoList cannot be null or empty!");
         }
+    }
+
+    public List<String> getLockKeys() {
+        List<String> lockKeys = new ArrayList<>();
+
+        orderLineRequestDtoList.forEach((dto) ->
+                lockKeys.add(dto.getProductId().toString()));
+
+        return lockKeys;
     }
 }

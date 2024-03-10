@@ -1,4 +1,4 @@
-package com.kitchen.creation.commerce.redis;
+package com.kitchen.creation.commerce.distributedlock;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -13,14 +13,12 @@ import java.util.concurrent.TimeUnit;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DistributedLock {
 
-    String key();
-
     TimeUnit timeUnit() default TimeUnit.SECONDS;
 
     /**
      * wait time to obtain the lock
      */
-    long waitTime() default 5L;
+    long waitTime() default 10L;
 
     /**
      * when the lock is leased,

@@ -1,6 +1,7 @@
-package com.kitchen.creation.commerce.redis;
+package com.kitchen.creation.commerce.distributedlock;
 
-import com.kitchen.creation.commerce.global.exception.order.OrderFailureException;
+import com.kitchen.creation.commerce.aop.AopForTransaction;
+import com.kitchen.creation.commerce.aop.CustomSpringELParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -13,6 +14,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 @Slf4j
 @Aspect
@@ -25,26 +27,24 @@ public class DistributedLockAop {
     private final RedissonClient redissonClient;
     private final AopForTransaction aopForTransaction;
 
-    @Around("@annotation(com.kitchen.creation.commerce.redis.DistributedLock)")
-    public void lock(final ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("@annotation(com.kitchen.creation.commerce.distributedlock.DistributedLock) && args(keys, ..)")
+    public void lock(final ProceedingJoinPoint joinPoint, final List<String> keys) throws Throwable {
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         DistributedLock distributedLock = method.getAnnotation(DistributedLock.class);
 
-        String[] productIds = distributedLock.key().split(",", -1);
-
-        for (String productId: productIds) {
-            String key = REDISSON_LOCK_PREFIX +
+        for (String key: keys) {
+            String lockKey = REDISSON_LOCK_PREFIX +
                     CustomSpringELParser.getDynamicValue(
                             signature.getParameterNames(),
                             joinPoint.getArgs(),
-                            productId
+                            key
                     );
 
-            log.info("lock on [method:{}] [key:{}]", method, key);
+            log.info("lock on [method:{}] [key:{}]", method, lockKey);
 
-            lockHelper(key, distributedLock, joinPoint);
+            lockHelper(lockKey, distributedLock, joinPoint);
         }
     }
 
