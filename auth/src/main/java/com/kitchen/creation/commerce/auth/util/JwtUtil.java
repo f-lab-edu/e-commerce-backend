@@ -5,7 +5,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -15,8 +17,9 @@ import java.util.Date;
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-    // Don't use this in prod
-    private static final String SECRET_KEY = "abcdefgabcdefgabcdefgabcdefgabcdefgabcdefg";
+    @Value("${spring.jwt.secret-key}")
+    @NonNull
+    private String SECRET_KEY;
     private final SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 
     public String generateRefreshToken(String userId, AuthRole role) {

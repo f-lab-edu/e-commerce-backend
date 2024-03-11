@@ -61,6 +61,7 @@ services:
       SPRING_DATASOURCE_DRIVER: com.mysql.cj.jdbc.Driver
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      JWT_SECRET_KEY: abcdefgabcdefgabcdefgabcdefgabcdefgabcdefg
     depends_on:
       - database
       - redis
