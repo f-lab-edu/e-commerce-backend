@@ -68,7 +68,6 @@ class CommerceApplicationTests {
         Assertions.assertThat(productRepository.findById(savedProduct.getId()).get().getStock())
                 .isEqualTo(0);
 
-        // TODO debug why assert fails here
         // exception except 1 order
 //        Assertions.assertThat(errorCount.get()).isEqualTo(
 //                calculateErrorCount(orderAmount, poolSize, stock)
@@ -162,6 +161,8 @@ class CommerceApplicationTests {
         public Order call() {
             try {
                 orderService.createOrder(
+                        orderLineRequestDtos.stream().map((orderLine) ->
+                                orderLine.getProductId().toString()).toList(),
                         orderLineRequestDtos
                 );
 

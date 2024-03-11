@@ -28,7 +28,10 @@ public class OrderV1Controller {
 
     @PostMapping("/v1/orders")
     public SuccessResponse<?> createOrder(@RequestBody OrderRequestDto order) {
-        orderService.createOrder(order.getOrderLineRequestDtoList());
+        orderService.createOrder(
+                order.getLockKeys(),
+                order.getOrderLineRequestDtoList()
+        );
         return new SuccessResponse<>(HttpStatus.OK.value(), "Success");
     }
 }
