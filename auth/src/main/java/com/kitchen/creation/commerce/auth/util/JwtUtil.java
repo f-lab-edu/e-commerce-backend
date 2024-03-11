@@ -5,22 +5,29 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import lombok.NonNull;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-    @Value("${spring.jwt.secret-key}")
-    @NonNull
-    private String SECRET_KEY;
-    private final SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+    private final Environment env;
+    private SecretKey secretKey;
+
+    @PostConstruct
+    protected void init() {
+        secretKey = Keys.hmacShaKeyFor(
+                Objects.requireNonNull(env.getProperty("spring.jwt.secret-key"))
+                        .getBytes(StandardCharsets.UTF_8)
+        );
+    }
 
     public String generateRefreshToken(String userId, AuthRole role) {
         long refreshPeriod = 1000L * 60L * 60L * 24L * 14; // 2 weeks
